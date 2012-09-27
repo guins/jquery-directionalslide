@@ -29,7 +29,7 @@
     $.DirectionalSlide = function( $el, options ) 
     {
         var s = $.DirectionalSlide.settings,
-            $hoverElem,
+            $hoverElmt,
             $normalElmt,
             coords = {
                 origin : {
@@ -65,15 +65,13 @@
         */
         function _init() 
         {    
-        	if(options.animateOnClick || s.isTouch) {
-        		s.animationOn = 'click';
+            if(options.animateOnClick || s.isTouch) {
+                s.animationOn = 'click';
                 $el.css({ cursor : 'pointer' });
             }
 
-            $hoverElem = $el.find( options.hoverElmt );
+            $hoverElmt = $el.find( options.hoverElmt );
             $normalElmt = $el.find( options.normalElmt );
-
-            $el.find(options.hoverElmt+' '+options.normalElmt)
 
             _initCss();
             _initEvents();
@@ -99,7 +97,7 @@
 
             $el.css({ overflow : "hidden" });
             $normalElmt.css(childrenProps);
-            $hoverElem.css(childrenProps).hide();
+            $hoverElmt.css(childrenProps).hide();
         }
 
         /*
@@ -114,8 +112,8 @@
         {    
             $el.bind(s.animationOn+' mouseleave', function( event ) 
             {    
-                var isAnimate = $el.data('isAnimate'),
-                	isOpen = $el.data('isOpen'),
+                var isAnimate = $el.data('isAnimate') ? true : false,
+                    isOpen = $el.data('isOpen') ? true : false,
                     direction = _getDirection( { x : event.pageX, y : event.pageY } ),
                     props = _getCoordinates( direction );
                 
@@ -125,14 +123,14 @@
                         $el.data('props', props);
 
                     if(!options.animateOnClick || (options.animateOnClick && !isAnimate && !isOpen) )
-                    	_animate(false,true);
+                        _animate(false,true);
                     else if (options.animateOnClick && !isAnimate && isOpen)
-                    	_animate(true,false);
+                        _animate(true,false);
                 }
                 else if( event.type === 'mouseleave' )
                 {
-                	if(options.animateOnClick && !isAnimate && !isOpen)
-                		return;
+                    if(options.animateOnClick && !isAnimate && !isOpen)
+                        return;
 
                     if(!isAnimate && isOpen)
                         $el.data('props', props);
@@ -151,14 +149,14 @@
         */
         function _animate( reverse, openAtEndOfAnimation )
         {
+            if($el.data('props') == undefined) return;
+
             var props = $el.data('props'),
-                isAnimate = $el.data('isAnimate'),
+                isAnimate = $el.data('isAnimate') ? true : false,
                 normalProps = {},
                 hoverProps = {},
                 hoverSpeed = options.animateSpeed,
                 normalSpeed = options.animateSpeed;
-           
-            if(props == undefined) return;
 
             if( !reverse )
             {
@@ -183,7 +181,7 @@
 
             _onAnimateStart();
 
-            $hoverElem.stop(true,false).css(hoverProps.from).show().animate(hoverProps.to, hoverSpeed, function()
+            $hoverElmt.stop(true,false).css(hoverProps.from).show().animate(hoverProps.to, hoverSpeed, function()
             {
                 _onAnimateEnd(openAtEndOfAnimation);
             });
@@ -233,13 +231,13 @@
                 y = ( coordinates.y - $el.offset().top ),
                 direction;
 
-                if(x<w/2 && y<h/2)
+                if(x<=w/2 && y<=h/2)
                     direction = (x>y) ? 0 : 3;
-                else if(x>w/2 && y<h/2)
+                else if(x>=w/2 && y<=h/2)
                     direction = ((w-x)>y) ? 0 : 1;
-                else if(x>w/2 && y>h/2)
+                else if(x>=w/2 && y>=h/2)
                     direction = ((w-x)>(h-y)) ? 2 : 1;
-                else if(x<w/2 && y>h/2)
+                else if(x<=w/2 && y>=h/2)
                     direction = (x>(h-y)) ? 2 : 3;
             
             return direction;
@@ -254,7 +252,7 @@
         function _getCoordinates( direction )
         {
             var coordinates = {};
-            
+
             switch( direction ) {
                 case 0:
                     coordinates['normal'] = ( !options.reverseNormal ) ? coords.fromBottom : coords.fromTop;
@@ -293,8 +291,8 @@
     $.DirectionalSlide.settings = (function()
     {
         var isTouch = ('ontouchstart' in window || 'ontouchstart' in document.documentElement),
-           	animationOn = 'mouseenter',
-        	hasTransitions = false,
+            animationOn = 'mouseenter',
+            hasTransitions = false,
             transitionType = null,
             transitionTypes = ["WebkitTransition","MozTransition","OTransition","transition"],
             transitionEndOptions = {
@@ -325,7 +323,7 @@
             hasTransitions  : hasTransitions,
             transitionType  : transitionType,
             transitionEnd   : transitionEnd,
-            animationOn 	: animationOn,
+            animationOn     : animationOn,
             isTouch         : isTouch 
         }
     })();
@@ -341,7 +339,7 @@
                 // transitionEase      : 'cubic-bezier(0.215, 0.610, 0.355, 1.000)',
                 // transitionSpeed     : '.3s',
                 animateSpeed        : 500,
-                animateOnClick 		: false
+                animateOnClick      : false
             };
 
         this.each(function() 
